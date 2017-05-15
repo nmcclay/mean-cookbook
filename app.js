@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var api = require('./routes/api');
 var angular = require('./routes/angular');
+var session = require('./routes/session');
 
 var app = express();
 
@@ -15,8 +16,8 @@ var app = express();
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-
+app.use(cookieParser(process.env.cookieSecret));
+app.use(session);
 app.use('/', angular);
 app.use('/api', api);
 app.use(function(req, res) {

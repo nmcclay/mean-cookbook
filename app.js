@@ -4,10 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var session = require('express-session');
 var api = require('./routes/api');
 var angular = require('./routes/angular');
-var session = require('express-session');
+var auth = require('./middleware/auth');
 
 var app = express();
 
@@ -22,8 +22,10 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+app.use('/admin', auth.setRole('admin'));
+app.use('/user', auth.setRole('user'));
 app.use('/', angular);
-app.use('/api', api);
+app.use('/api', auth.requireRole('admin'), api);
 app.use(function(req, res) {
   var error = new Error('Not Found');
   res.status(404).json({

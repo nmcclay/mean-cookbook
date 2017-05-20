@@ -22,6 +22,12 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+
+app.get('/crash', function(req, res) {
+  this.does.not.exist;
+  process.exit(1);
+});
+
 app.use('/admin', auth.setRole('admin'));
 app.use('/user', auth.setRole('user'));
 app.use('/', angular);

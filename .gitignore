@@ -12,7 +12,6 @@ Desktop.ini
 .directory
 *~
 
-
 # npm
 node_modules
 *.log
@@ -24,6 +23,11 @@ coverage
 
 # Benchmarking
 benchmarks/graphs
+
+# Forever
+config.json
+pids
+.pid
 
 # IDE
 .idea

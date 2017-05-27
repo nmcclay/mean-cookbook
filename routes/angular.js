@@ -18,7 +18,8 @@ router.use(express.static(angularBuildPath));
 
 router.get('*', (req, res, next) => {
   if (req.url.startsWith('/api')) return next();
-  var locale = req.get('Accept-Language').split(',')[0];
+  var acceptLanguage = req.get('Accept-Language') || 'en-us,en';
+  var locale = acceptLanguage.split(',')[0];
   angularIndexFile('head script').html('document.locale = "' + locale + '"');
   res.contentType('text/html; charset=UTF-8');
   res.send(angularIndexFile.html());

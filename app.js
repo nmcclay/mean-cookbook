@@ -10,6 +10,7 @@ var angular = require('./routes/angular');
 var auth = require('./middleware/auth');
 
 var app = express();
+var env = process.env.NODE_ENV || 'development';
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -17,11 +18,29 @@ app.use(logger('short'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.cookieSecret));
-app.use(session({
-  secret: process.env.cookieSecret,
-  resave: false,
-  saveUninitialized: true
-}));
+
+if (env == 'production') {
+  app.use(session({
+    secret: process.env.cookieSecret,
+    resave: false,
+    saveUninitialized: true,
+    name: 'express-project-session',
+    cookie: {
+      secure: true,
+      httpOnly: true,
+      domain: 'localhost',
+      expires: new Date(Date.now() + 60 * 60 * 1000)
+    }
+  }));
+  var helmet = require('helmet');
+  app.use(helmet());
+} else {
+  app.use(session({
+    secret: process.env.cookieSecret,
+    resave: false,
+    saveUninitialized: true
+  }));
+}
 
 app.get('/crash', function(req, res) {
   this.does.not.exist;

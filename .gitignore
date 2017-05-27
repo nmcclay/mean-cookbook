@@ -29,5 +29,9 @@ config.json
 pids
 .pid
 
+# Security
+key.pem
+cert.pem
+
 # IDE
 .idea

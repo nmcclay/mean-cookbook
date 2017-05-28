@@ -50,7 +50,7 @@ app.get('/crash', function(req, res) {
 app.use('/admin', auth.setRole('admin'));
 app.use('/user', auth.setRole('user'));
 app.use('/', angular);
-app.use('/api', auth.requireRole('admin'), auth.logger(logger), api);
+app.use('/api', api);
 app.use(function(req, res) {
   var error = new Error('Not Found');
   res.status(404).json({

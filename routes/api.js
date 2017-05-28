@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var posts = require('./api/posts');
+var enforceContentType = require('enforce-content-type');
 
 router.options('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -8,9 +10,15 @@ router.options('*', function (req, res, next) {
   res.send(200);
 });
 
+router.use(enforceContentType({
+  type: 'application/json'
+}));
+
 router.get('/', function (req, res, next) {
   res.send('API is running');
 });
+
+router.use('/posts', posts);
 
 router.get('/:param', function (req, res, next) {
   var params = req.params;

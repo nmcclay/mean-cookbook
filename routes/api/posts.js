@@ -6,10 +6,26 @@ var posts = [{
   content: string = "... brevity is the soul of wit...",
   published: new Date(),
   author: {
+    id: "1",
     firstName: "Nicholas",
     lastName: "McClay",
     email: "nmcclay@nickmcclay.com"
   }
 }];
 
-module.exports = restFactory('posts', posts);
+var serialize = {
+  attributes: ['title', 'content', 'published', 'author'],
+
+  author: {
+    ref: function (user, author) {
+      return author.id;
+    },
+    attributes: ['firstName', 'lastName', 'email']
+  }
+};
+
+var deserialize = {
+  keyForAttribute: 'dash-case'
+};
+
+module.exports = restFactory('posts', posts, serialize, deserialize);

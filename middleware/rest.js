@@ -1,10 +1,23 @@
 var resource = require('resource-router-middleware');
 var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
+var JSONAPIError = require('jsonapi-serializer').Error;
 
 module.exports = function(resourceId, store, serialize, deserialize) {
   var serializer = new JSONAPISerializer(resourceId, serialize);
   var deserializer = new JSONAPIDeserializer(deserialize);
+
+  var error = function(status, title, description) {
+    return new JSONAPIError({
+      status: status,
+      title: title,
+      detail: description
+    });
+  };
+
+  var fileNotFound = function() {
+    return error(404, 'Not found', 'Resource does not exist.');
+  };
 
   var find = function(id, callback) {
     var itemPosition = store.map(function(item) {
@@ -24,7 +37,7 @@ module.exports = function(resourceId, store, serialize, deserialize) {
     load : function(req, id, callback) {
       find(id, function(item) {
         if (!item) {
-          callback('Not found');
+          callback(fileNotFound());
         } else {
           callback(null, item);
         }
@@ -58,7 +71,7 @@ module.exports = function(resourceId, store, serialize, deserialize) {
             return res.status(204).send('Replaced');
           });
         } else {
-          res.status(404).send('Not found');
+          res.status(404).json(fileNotFound());
         }
       });
     },
@@ -72,7 +85,7 @@ module.exports = function(resourceId, store, serialize, deserialize) {
             return res.status(204).send('Accepted');
           });
         } else {
-          res.status(404).send('Not found');
+          res.status(404).json(fileNotFound());
         }
       });
     },
@@ -84,7 +97,7 @@ module.exports = function(resourceId, store, serialize, deserialize) {
           store.splice(i, 1);
           return res.status(200).send('Deleted');
         } else {
-          res.status(404).send('Not found');
+          res.status(404).json(fileNotFound());
         }
       });
     }

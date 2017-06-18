@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var api = require('./routes/api');
-var angular = require('./routes/angular');
+// var angular = require('./routes/angular');
 var auth = require('./middleware/auth');
 
 var app = express();
@@ -15,6 +15,7 @@ var env = process.env.NODE_ENV || 'development';
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('short'));
+app.use(auth.logger(logger));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.cookieSecret));
@@ -47,9 +48,7 @@ app.get('/crash', function(req, res) {
   process.exit(1);
 });
 
-app.use('/admin', auth.setRole('admin'));
-app.use('/user', auth.setRole('user'));
-app.use('/', angular);
+// app.use('/', angular);
 app.use('/api', api);
 app.use(function(req, res) {
   var error = new Error('Not Found');

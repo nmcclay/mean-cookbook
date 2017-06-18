@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var posts = require('./api/posts');
+var auth = require('../middleware/auth');
+var login = require('./api/login');
 var enforceContentType = require('enforce-content-type');
 
 router.options('*', function (req, res, next) {
@@ -18,7 +20,8 @@ router.get('/', function (req, res, next) {
   res.send('API is running');
 });
 
-router.use('/posts', posts);
+router.use('/login', login);
+router.use('/posts', auth.requireRole('admin'), posts);
 
 router.get('/:param', function (req, res, next) {
   var params = req.params;

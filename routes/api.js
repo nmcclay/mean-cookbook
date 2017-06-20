@@ -4,6 +4,7 @@ var posts = require('./api/posts');
 var auth = require('../middleware/auth');
 var login = require('./api/login');
 var enforceContentType = require('enforce-content-type');
+var jwt = require('jwt-express');
 
 router.options('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -21,7 +22,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.use('/login', login);
-router.use('/posts', auth.requireRole('admin'), posts);
+router.use('/posts', jwt.require('role', '===', 'admin'), posts);
 
 router.get('/:param', function (req, res, next) {
   var params = req.params;

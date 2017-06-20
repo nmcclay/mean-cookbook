@@ -13,7 +13,7 @@ var users = [{
 }];
 
 var serializer = new JSONAPISerializer('users', {
-  attributes: ['firstName', 'lastName', 'email'],
+  attributes: ['firstName', 'lastName', 'email', 'role'],
   keyForAttribute: 'camelCase'
 });
 
@@ -47,7 +47,8 @@ var login = function(req, res, next) {
 router.post('/', login, function(req, res, next) {
   req.session.save(function (err) {
     var user = req.session.user;
-    res.json(serializer.serialize(user));
+    var jwt = res.jwt(serializer.serialize(user).data.attributes);
+    res.json(jwt.token);
   });
 });
 

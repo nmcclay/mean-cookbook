@@ -8,6 +8,7 @@ var session = require('express-session');
 var api = require('./routes/api');
 // var angular = require('./routes/angular');
 var auth = require('./middleware/auth');
+var jwt = require('jwt-express');
 
 var app = express();
 var env = process.env.NODE_ENV || 'development';
@@ -19,6 +20,9 @@ app.use(auth.logger(logger));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.cookieSecret));
+app.use(jwt.init(process.env.jwtSecret, {
+  cookieOptions: {httpOnly: false}
+}));
 
 if (env == 'production') {
   app.use(session({

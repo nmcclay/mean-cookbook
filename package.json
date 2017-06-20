@@ -17,6 +17,7 @@
     "express-session": "^1.15.2",
     "helmet": "^3.6.0",
     "jsonapi-serializer": "^3.5.3",
+    "jwt-express": "^1.1.0",
     "morgan": "~1.8.1",
     "resource-router-middleware": "https://github.com/developit/resource-router-middleware",
     "serve-favicon": "~2.4.2"

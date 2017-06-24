@@ -41,7 +41,7 @@ module.exports = {
 
   unauthorized: function (err, req, res, next) {
     return res.status(401).json(new JSONAPIError({
-      status: 403,
+      status: 401,
       title: 'Requires Authentication',
       detail: err.message
     }));

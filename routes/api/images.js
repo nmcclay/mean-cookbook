@@ -1,15 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var multer  = require('multer');
-var upload = multer({ dest: 'uploads/' });
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
+var cloudinary = require('../../middleware/cloudinary');
 var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 var JSONAPIError = require('jsonapi-serializer').Error;
 
 var images = [];
 
 var serializer = new JSONAPISerializer('images', {
-  id: 'filename',
-  attributes: ['originalname', 'mimetype', 'path', 'size']
+  id: 'public_id',
+  attributes: ['url', 'secure_url', 'originalname', 'bytes', 'created_at', 'width', 'height']
 });
 
 var coverUpload = function(req, res, next) {
@@ -25,9 +27,11 @@ var coverUpload = function(req, res, next) {
   });
 };
 
-router.post('/', coverUpload, function(req,res) {
-  images.push(req.file);
-  res.json(serializer.serialize(req.file));
+router.post('/', coverUpload, cloudinary.uploadFromFileBuffer, function(req,res) {
+  var image = req.cloudinary;
+  image.originalname = req.file.originalname;
+  images.push(image);
+  res.json(serializer.serialize(image));
 });
 
 module.exports = router;

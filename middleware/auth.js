@@ -37,5 +37,13 @@ module.exports = {
         }));
       }
     }
+  },
+
+  unauthorized: function (err, req, res, next) {
+    return res.status(401).json(new JSONAPIError({
+      status: 403,
+      title: 'Requires Authentication',
+      detail: err.message
+    }));
   }
 };

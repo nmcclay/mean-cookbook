@@ -11,7 +11,7 @@ var images = [];
 
 var serializer = new JSONAPISerializer('images', {
   id: 'public_id',
-  attributes: ['url', 'secure_url', 'originalname', 'bytes', 'created_at', 'width', 'height']
+  attributes: ['url', 'secure_url', 'originalname', 'bytes', 'created_at', 'width', 'height', 'type']
 });
 
 var coverUpload = function(req, res, next) {
@@ -32,6 +32,14 @@ router.post('/', coverUpload, cloudinary.uploadFromFileBuffer, function(req,res)
   image.originalname = req.file.originalname;
   images.push(image);
   res.json(serializer.serialize(image));
+});
+
+router.get('/', cloudinary.getImages(), function(req, res) {
+  res.json(serializer.serialize((req.cloudinary)));
+});
+
+router.get('/:id', cloudinary.getSignedImageById, function(req, res) {
+  res.redirect(req.cloudinary);
 });
 
 module.exports = router;

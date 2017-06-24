@@ -10,11 +10,12 @@ cloudinary.config({
 var self = module.exports = {
   upload: function(image, options) {
     if (!options) options = {};
+    options.type = "authenticated";
     return function(req, res, next) {
       cloudinary.v2.uploader.upload(image, options, function(error, result) {
         if (error) {
-          return res.status(500).json(new JSONAPIError({
-            status: 500,
+          return res.status(error.http_code).json(new JSONAPIError({
+            status: error.http_code,
             title: 'Cloudinary Upload Error',
             detail: error.message
           }));
@@ -39,12 +40,14 @@ var self = module.exports = {
   },
 
   uploadBuffer: function(buffer, options) {
-    if (!options) options = { discard_original_filename: true };
+    if (!options) options = {};
+    options.type = "authenticated";
+    options.discard_original_filename = true;
     return function(req, res, next) {
       cloudinary.v2.uploader.upload_stream(options, function(error, result) {
         if (error) {
-          return res.status(500).json(new JSONAPIError({
-            status: 500,
+          return res.status(error.http_code).json(new JSONAPIError({
+            status: error.http_code,
             title: 'Cloudinary Upload Error',
             detail: error.message
           }));
@@ -64,6 +67,48 @@ var self = module.exports = {
         status: 500,
         title: 'Invalid File Buffer',
         detail: 'There is no file buffer available to upload to Cloudinary.'
+      }));
+    }
+  },
+
+  getImages: function(options) {
+    return function(req, res, next) {
+      cloudinary.v2.api.resources(options, function(error, result) {
+        if (error) {
+          return res.status(error.http_code).json(new JSONAPIError({
+            status: error.http_code,
+            title: 'Cloudinary Error',
+            detail: error.message
+          }));
+        } else {
+          req.cloudinary = result.resources;
+          next();
+        }
+      })
+    };
+  },
+
+  getSignedImage: function(name, options) {
+    if (!options) options = {};
+    options.sign_url = true;
+    options.type = "authenticated";
+    return function(req, res, next) {
+      var image = cloudinary.url(name, options);
+      req.cloudinary = image;
+      next();
+    }
+  },
+
+  getSignedImageById: function(req, res, next) {
+    if (req.params && req.params.id) {
+      let name = req.params.id;
+      console.log(name);
+      return self.getSignedImage(name)(req, res, next);
+    } else {
+      return res.status(500).json(new JSONAPIError({
+        status: 500,
+        title: 'Invalid Image Request',
+        detail: 'There is no Cloudinary public_id provided.'
       }));
     }
   }

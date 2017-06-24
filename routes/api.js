@@ -6,6 +6,7 @@ var login = require('./api/login');
 var images = require('./api/images');
 var enforceContentType = require('enforce-content-type');
 var jwt = require('jwt-express');
+var env = process.env.NODE_ENV || 'development';
 
 router.options('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -33,6 +34,8 @@ router.get('/:param', function (req, res, next) {
   res.json(params);
 });
 
-router.use(auth.unauthorized);
+if (env == 'production') {
+  router.use(auth.unauthorized);
+}
 
 module.exports = router;

@@ -19,6 +19,7 @@
     "helmet": "^3.6.0",
     "jsonapi-serializer": "^3.5.3",
     "jwt-express": "^1.1.0",
+    "lodash": "^4.17.4",
     "morgan": "~1.8.1",
     "multer": "^1.3.0",
     "resource-router-middleware": "https://github.com/developit/resource-router-middleware",

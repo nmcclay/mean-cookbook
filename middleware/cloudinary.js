@@ -1,5 +1,6 @@
 var cloudinary = require('cloudinary');
 var JSONAPIError = require('jsonapi-serializer').Error;
+var _pick = require('lodash/pick');
 
 cloudinary.config({
   cloud_name: process.env.cloudinaryCloudName,
@@ -88,6 +89,12 @@ var self = module.exports = {
     };
   },
 
+  getTransformation: function(req, res, next) {
+    let transforms = _pick(req.query, ['width', 'height', 'crop', 'radius', 'gravity', 'format']);
+    req.transformation = transforms;
+    next();
+  },
+
   getSignedImage: function(name, options) {
     if (!options) options = {};
     options.sign_url = true;
@@ -102,8 +109,8 @@ var self = module.exports = {
   getSignedImageById: function(req, res, next) {
     if (req.params && req.params.id) {
       let name = req.params.id;
-      console.log(name);
-      return self.getSignedImage(name)(req, res, next);
+      let options = req.transformation;
+      return self.getSignedImage(name, options)(req, res, next);
     } else {
       return res.status(500).json(new JSONAPIError({
         status: 500,

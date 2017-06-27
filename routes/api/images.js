@@ -34,11 +34,12 @@ router.post('/', coverUpload, cloudinary.uploadFromFileBuffer, function(req,res)
   res.json(serializer.serialize(image));
 });
 
-router.get('/', cloudinary.getImages(), function(req, res) {
+router.get('/', cloudinary.getImages({type: "authenticated"}), function(req, res) {
   res.json(serializer.serialize((req.cloudinary)));
 });
 
-router.get('/:id', cloudinary.getSignedImageById, function(req, res) {
+router.get('/:id', cloudinary.getTransformation, cloudinary.getSignedImageById, function(req, res) {
+  console.log(req.cloudinary);
   res.redirect(req.cloudinary);
 });
 

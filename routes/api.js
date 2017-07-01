@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var posts = require('./api/posts');
 var auth = require('../middleware/auth');
+var stripe = require('../middleware/stripe');
 var login = require('./api/login');
 var images = require('./api/images');
 var enforceContentType = require('enforce-content-type');
@@ -16,16 +17,21 @@ router.options('*', function (req, res, next) {
 });
 
 router.use(enforceContentType({
-  type: ['application/json', 'multipart/form-data']
+  type: ['application/json', 'multipart/form-data', 'application/x-www-form-urlencoded']
 }));
 
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
   res.send('API is running');
 });
 
 router.use('/login', login);
-router.use('/images', jwt.require('role', '===', 'admin'), images);
-router.use('/posts', jwt.require('role', '===', 'admin'), posts);
+router.use('/donate', stripe.createCustomer, stripe.charge(500), function(req, res) {
+  console.log(res.stripe);
+  res.send('thank you');
+});
+router.use('/customers', jwt.active(), stripe.getCustomers);
+router.use('/images', jwt.active(), jwt.require('role', '===', 'admin'), images);
+router.use('/posts', jwt.active(), jwt.require('role', '===', 'admin'), posts);
 
 router.get('/:param', function (req, res, next) {
   var params = req.params;

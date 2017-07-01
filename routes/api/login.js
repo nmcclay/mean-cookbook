@@ -46,8 +46,10 @@ var login = function(req, res, next) {
 
 router.post('/', login, function(req, res, next) {
   req.session.save(function (err) {
-    var user = req.session.user;
-    var jwt = res.jwt(serializer.serialize(user).data.attributes);
+    var user = serializer.serialize(req.session.user);
+    var userJSON = user.data.attributes;
+    userJSON.exp = new Date().getTime() + 60;
+    var jwt = res.jwt(userJSON);
     res.json(jwt.token);
   });
 });

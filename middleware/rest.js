@@ -7,7 +7,7 @@ module.exports = function(resourceId, store, serialize, deserialize) {
   var serializer = new JSONAPISerializer(resourceId, serialize);
   var deserializer = new JSONAPIDeserializer(deserialize);
 
-  var error = function(status, title, description) {
+  var apiError = function(status, title, description) {
     return new JSONAPIError({
       status: status,
       title: title,
@@ -15,37 +15,36 @@ module.exports = function(resourceId, store, serialize, deserialize) {
     });
   };
 
-  var fileNotFound = function() {
-    return error(404, 'Not found', 'Resource does not exist.');
+  var deserializeError = function(error) {
+    error = error || {};
+    return apiError(400, error.title || "Invalid Request Format", error.detail || "Requests must use JSON API format.");
   };
 
-  var find = function(id, callback) {
-    var itemPosition = store.map(function(item) {
-      return item.id;
-    }).indexOf(id);
-    var item = store[itemPosition];
-    if (item) {
-      callback(item, itemPosition);
-    } else {
-      callback(false);
-    }
+  var storeError = function(error) {
+    error = error || {};
+    return apiError(400, error.name || "Database Request Failed", error.message || "Unable to handle requested database operation.");
+  };
+
+  var fileNotFound = function(id) {
+    return apiError(404, 'Not found', 'Resource ' + id + ' does not exist.');
   };
 
   return resource({
     id : resourceId,
 
     load : function(req, id, callback) {
-      find(id, function(item) {
-        if (!item) {
-          callback(fileNotFound());
-        } else {
-          callback(null, item);
-        }
+      store.findById(id, function(error, item) {
+        if (error) return callback(storeError(error));
+        if (!item) return callback(fileNotFound(id));
+        callback(null, item);
       });
     },
 
     list : function(req, res) {
-      res.json(serializer.serialize(store));
+      store.find({}, function(error, items) {
+        if (error) return res.status(400).json(storeError(error));
+        res.json(serializer.serialize(items));
+      });
     },
 
     read : function(req, res) {
@@ -53,52 +52,54 @@ module.exports = function(resourceId, store, serialize, deserialize) {
     },
 
     create : function(req, res) {
-      deserializer.deserialize(req.body).then(function(item) {
-        item.id = store.length.toString(36);
-        store.push(item);
-        res.json(item);
-      });
+      try {
+        deserializer.deserialize(req.body).then(function(item) {
+          var doc = new store(item);
+          doc.save(function(error, savedDoc) {
+            if (error) return res.status(400).json(storeError(error));
+            res.json(serializer.serialize(savedDoc));
+          });
+        })
+      } catch(error) {
+        return res.status(400).json(deserializeError(error));
+      }
     },
 
     update : function(req, res) {
       var id = req.params[resourceId];
-      find(id, function(item, i) {
-        if (item) {
-          deserializer.deserialize(req.body).then(function(itemReplace) {
-            store.splice(i, 1);
-            itemReplace.id = id;
-            store.push(itemReplace);
-            return res.status(204).send('Replaced');
+      try {
+        deserializer.deserialize(req.body).then(function(itemReplace) {
+          var doc = new store(itemReplace).toObject();
+          delete doc._id;
+          store.update({ _id: id }, doc, { upsert: true, overwrite: true }, function(error) {
+            if (error) return res.status(400).json(storeError(error));
+            res.status(204).send();
           });
-        } else {
-          res.status(404).json(fileNotFound());
-        }
-      });
+        });
+      } catch(error) {
+        return res.status(400).json(deserializeError(error));
+      }
     },
 
     modify: function(req, res) {
       var id = req.params[resourceId];
-      find(id, function(item, i) {
-        if (item) {
-          deserializer.deserialize(req.body).then(function(itemUpdates) {
-            Object.assign(store[i], itemUpdates);
-            return res.status(204).send('Accepted');
+      try {
+        deserializer.deserialize(req.body).then(function(itemModify) {
+          store.update({ _id: id }, itemModify, function(error) {
+            if (error) return res.status(400).json(storeError(error));
+            res.status(204).send();
           });
-        } else {
-          res.status(404).json(fileNotFound());
-        }
-      });
+        })
+      } catch(error) {
+        return res.status(400).json(deserializeError(error));
+      }
     },
 
     delete : function(req, res) {
       var id = req.params[resourceId];
-      find(id, function(item, i) {
-        if (item) {
-          store.splice(i, 1);
-          return res.status(200).send('Deleted');
-        } else {
-          res.status(404).json(fileNotFound());
-        }
+      store.remove({ _id: id }, function (error) {
+        if (error) return res.status(400).json(storeError(error));
+        res.status(204).send();
       });
     }
   });

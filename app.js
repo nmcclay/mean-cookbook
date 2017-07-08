@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var api = require('./routes/api');
+var db = require('./database');
 // var angular = require('./routes/angular');
 var auth = require('./middleware/auth');
 var jwt = require('jwt-express');

@@ -2,8 +2,9 @@ var resource = require('resource-router-middleware');
 var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 var JSONAPIError = require('jsonapi-serializer').Error;
+var _omit = require('lodash/omit');
 
-module.exports = function(resourceId, store, serialize, deserialize) {
+module.exports = function(resourceId, store, serialize, deserialize, middleware) {
   var serializer = new JSONAPISerializer(resourceId, serialize);
   var deserializer = new JSONAPIDeserializer(deserialize);
 
@@ -32,6 +33,8 @@ module.exports = function(resourceId, store, serialize, deserialize) {
   return resource({
     id : resourceId,
 
+    middleware: middleware,
+
     load : function(req, id, callback) {
       store.findById(id, function(error, item) {
         if (error) return callback(storeError(error));
@@ -41,7 +44,21 @@ module.exports = function(resourceId, store, serialize, deserialize) {
     },
 
     list : function(req, res) {
-      store.find({}, function(error, items) {
+      var query = store.find();
+      var size = req.query._size ? parseInt(req.query._size) : 10;
+      var page = req.query._page ? parseInt(req.query._page) : 1;
+      var filters = _omit(req.query, ['_size', '_page', '_search']);
+
+      if (req.query._search) {
+        query.where({$text: {$search: req.query._search}});
+      }
+
+      query.where(filters);
+      query.sort({ 'published': -1 });
+      query.limit(size);
+      query.skip(size * (page - 1));
+
+      query.exec(function(error, items) {
         if (error) return res.status(400).json(storeError(error));
         res.json(serializer.serialize(items));
       });

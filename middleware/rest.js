@@ -54,7 +54,6 @@ module.exports = function(resourceId, store, serialize, deserialize, middleware)
       }
 
       query.where(filters);
-      query.sort({ 'published': -1 });
       query.limit(size);
       query.skip(size * (page - 1));
 
@@ -86,9 +85,7 @@ module.exports = function(resourceId, store, serialize, deserialize, middleware)
       var id = req.params[resourceId];
       try {
         deserializer.deserialize(req.body).then(function(itemReplace) {
-          var doc = new store(itemReplace).toObject();
-          delete doc._id;
-          store.update({ _id: id }, doc, { upsert: true, overwrite: true }, function(error) {
+          store.replaceOne({ _id: id }, itemReplace, function(error, raw) {
             if (error) return res.status(400).json(storeError(error));
             res.status(204).send();
           });
@@ -102,7 +99,7 @@ module.exports = function(resourceId, store, serialize, deserialize, middleware)
       var id = req.params[resourceId];
       try {
         deserializer.deserialize(req.body).then(function(itemModify) {
-          store.update({ _id: id }, itemModify, function(error) {
+          store.updateOne({ _id: id }, itemModify, function(error, raw) {
             if (error) return res.status(400).json(storeError(error));
             res.status(204).send();
           });

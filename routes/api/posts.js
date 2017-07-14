@@ -3,7 +3,7 @@ var Posts = require('../../models/posts');
 var _pick = require('lodash/pick');
 
 var serialize = {
-  attributes: ['title', 'content', 'published', 'author'],
+  attributes: ['title', 'content', 'published', 'author', 'html'],
 
   author: {
     ref: function (user, author) {

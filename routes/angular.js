@@ -5,6 +5,8 @@ var express = require('express');
 var router = express.Router();
 
 var cheerio = require('cheerio');
+var expressStaticGzip = require("express-static-gzip");
+
 var angularBuildPath = path.resolve(__dirname,
   '../../my-angular4-project/dist');
 var angularIndexFile = cheerio.load(
@@ -14,7 +16,7 @@ var angularIndexFile = cheerio.load(
   )
 );
 
-router.use(express.static(angularBuildPath));
+router.use(expressStaticGzip(angularBuildPath));
 
 router.get('*', (req, res, next) => {
   if (req.url.startsWith('/api')) return next();

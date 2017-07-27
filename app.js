@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var api = require('./routes/api');
 var db = require('./database');
-// var angular = require('./routes/angular');
+var angular = require('./routes/angular');
 var auth = require('./middleware/auth');
 var jwt = require('jwt-express');
 
@@ -53,7 +53,7 @@ app.get('/crash', function(req, res) {
   process.exit(1);
 });
 
-// app.use('/', angular);
+app.use('/', angular);
 app.use('/api', api);
 app.use(function(req, res) {
   var error = new Error('Not Found');

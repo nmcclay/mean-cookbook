@@ -18,6 +18,7 @@
     "enforce-content-type": "^1.1.0",
     "express": "~4.15.2",
     "express-session": "^1.15.2",
+    "express-static-gzip": "^0.3.0",
     "faker": "^4.1.0",
     "helmet": "^3.6.0",
     "jsonapi-serializer": "^3.5.3",

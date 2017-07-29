@@ -5,8 +5,8 @@ var JSONAPIError = require('jsonapi-serializer').Error;
 module.exports = {
   logger: function(morgan, filename) {
     if (!filename) filename = 'admin.log';
-    var adminLogFilePath = path.resolve(__dirname, "../", filename);
-    var adminLogStream = fs.createWriteStream(adminLogFilePath, {flags: 'a'});
+    var adminLogFilePath = path.resolve(__dirname, filename);
+    var adminLogStream = fs.createWriteStream(adminLogFilePath, { flags: 'a' });
 
     morgan.token('role', function (req, res) {
       return req.session.user.role;

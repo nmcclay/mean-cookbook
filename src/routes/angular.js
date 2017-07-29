@@ -8,7 +8,7 @@ var cheerio = require('cheerio');
 var expressStaticGzip = require("express-static-gzip");
 
 var angularBuildPath = path.resolve(__dirname,
-  '../../my-angular4-project/dist');
+  '../../../my-angular4-project/dist');
 var angularIndexFile = cheerio.load(
   fs.readFileSync(
     path.join(angularBuildPath, 'index.html'),

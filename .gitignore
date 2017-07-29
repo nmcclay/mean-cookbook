@@ -18,6 +18,7 @@ node_modules
 *.gz
 uploads
 sock
+dist
 
 # Coveralls
 coverage

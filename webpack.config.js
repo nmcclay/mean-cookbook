@@ -1,9 +1,10 @@
 const nodeExternals = require('webpack-node-externals');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 const path = require('path');
 
 module.exports = {
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   entry: path.resolve(__dirname, 'src/index.ts'),
   target: 'node',
   node: {
@@ -27,11 +28,14 @@ module.exports = {
     ]
   },
   plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: path.resolve(__dirname, '../my-angular4-project/dist'),
-        to: 'angular'
-      }
-    ])
+    new CopyWebpackPlugin([{
+      from: path.resolve(__dirname, '../my-angular4-project/dist'),
+      to: 'angular'
+    }]),
+    new CompressionPlugin({
+      asset: "[path].gz[query]",
+      algorithm: "gzip",
+      test: /\.(js|css)$/
+    })
   ]
 };

@@ -6,7 +6,7 @@ import * as session from 'express-session';
 import * as jwt from 'jwt-express';
 import * as helmet from 'helmet';
 import * as auth from './middleware/auth';
-import * as angular from './routes/angular';
+import angular from './routes/Angular';
 import * as api from './routes/api';
 
 import { Request, Response, Application } from 'express';

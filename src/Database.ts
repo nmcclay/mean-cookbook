@@ -1,9 +1,15 @@
+import * as mongoose from 'mongoose';
+import * as mocks from './mocks';
+import * as bluebird from 'bluebird';
+
+import {ConnectionBase} from "mongoose";
+
 var env = process.env.NODE_ENV || 'development';
-var mongoose = require('mongoose');
-global.Promise = mongoose.Promise = require("bluebird");
+global.Promise = bluebird;
+(<any>mongoose).Promise = bluebird;
+
 mongoose.connect('mongodb://localhost/mean-db').then(function() {
   if (env == 'development') {
-    var mocks = require('./mocks');
     mongoose.connection.db.dropDatabase().then(function() {
       mocks.generateAuthorAndPosts(3);
       mocks.generateAuthorAndPosts(3);
@@ -15,4 +21,6 @@ mongoose.connect('mongodb://localhost/mean-db').then(function() {
   console.error('failed to connect to MongoDB...', error);
 });
 
-module.exports = mongoose.connection;
+debugger;
+
+export const mongooseConnection:ConnectionBase = mongoose.connection;

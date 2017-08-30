@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import * as mocks from './mocks';
 import * as bluebird from 'bluebird';
 
-import {ConnectionBase} from "mongoose";
+import { ConnectionBase } from "mongoose";
 
 var env = process.env.NODE_ENV || 'development';
 global.Promise = bluebird;

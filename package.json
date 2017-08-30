@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "start": "node $NODE_DEBUG_OPTION ./dist/express.bundle.js",
-    "debug": "DEBUG=express* node debug ./dist/express.bundle.js",
+    "debug": "DEBUG=express* node $NODE_DEBUG_OPTION ./dist/express.bundle.js",
     "build": "webpack",
     "watch": "npm-run-all clean build --parallel watch:server watch:build --print-label",
     "watch:build": "webpack --watch",

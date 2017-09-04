@@ -5,6 +5,8 @@ import {NextFunction, Request, Response, Router} from "express";
 import * as cheerio from 'cheerio';
 import * as expressStaticGzip from 'express-static-gzip';
 
+const angularBuildPath = process.env.angularBuildPath ? process.env.angularBuildPath : path.resolve(__dirname, 'angular');
+
 class AngularRoute {
     public route: Router;
     private angularBuildPath: string;
@@ -12,7 +14,7 @@ class AngularRoute {
 
     constructor() {
         this.route = express.Router();
-        this.angularBuildPath = path.resolve(__dirname, 'angular');
+        this.angularBuildPath = String(angularBuildPath);
         this.indexPage = this.getIndexPage(this.angularBuildPath);
         this.enableGzipCompression();
         this.route.get('*', this.serveRoute.bind(this));

@@ -18,7 +18,7 @@ module.exports = {
 
     return morgan(':email :role - :method :status :url', {
       skip: function (req, res) {
-        return !req.session.user
+        return !req.session.user;
       },
       stream: adminLogStream
     });
@@ -36,7 +36,7 @@ module.exports = {
           detail: 'You do not have the correct authorization to access this resource.'
         }));
       }
-    }
+    };
   },
 
   unauthorized: function (err, req, res, next) {

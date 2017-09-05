@@ -20,12 +20,12 @@ module.exports = function(resourceId, store, serialize, deserialize, overrides) 
 
   var deserializeError = function(error) {
     error = error || {};
-    return apiError(400, error.title || "Invalid Request Format", error.detail || "Requests must use JSON API format.");
+    return apiError(400, error.title || 'Invalid Request Format', error.detail || 'Requests must use JSON API format.');
   };
 
   var storeError = function(error) {
     error = error || {};
-    return apiError(400, error.name || "Database Request Failed", error.message || "Unable to handle requested database operation.");
+    return apiError(400, error.name || 'Database Request Failed', error.message || 'Unable to handle requested database operation.');
   };
 
   var fileNotFound = function(id) {
@@ -78,7 +78,7 @@ module.exports = function(resourceId, store, serialize, deserialize, overrides) 
             if (error) return res.status(400).json(storeError(error));
             res.json(serializer.serialize(savedDoc));
           });
-        })
+        });
       } catch(error) {
         return res.status(400).json(deserializeError(error));
       }
@@ -88,7 +88,7 @@ module.exports = function(resourceId, store, serialize, deserialize, overrides) 
       var id = req.params[resourceId];
       try {
         deserializer.deserialize(req.body).then(function(itemReplace) {
-          store.replaceOne({ _id: id }, itemReplace, function(error, raw) {
+          store.replaceOne({ _id: id }, itemReplace, function(error) {
             if (error) return res.status(400).json(storeError(error));
             res.status(204).send();
           });
@@ -102,11 +102,11 @@ module.exports = function(resourceId, store, serialize, deserialize, overrides) 
       var id = req.params[resourceId];
       try {
         deserializer.deserialize(req.body).then(function(itemModify) {
-          store.updateOne({ _id: id }, itemModify, function(error, raw) {
+          store.updateOne({ _id: id }, itemModify, function(error) {
             if (error) return res.status(400).json(storeError(error));
             res.status(204).send();
           });
-        })
+        });
       } catch(error) {
         return res.status(400).json(deserializeError(error));
       }

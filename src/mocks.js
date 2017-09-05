@@ -1,11 +1,13 @@
+/*eslint no-console: "off"*/
+
 var faker = require('faker');
 var Post = require('./models/posts');
 var User = require('./models/users');
 
 var makePost = function() {
   var markdown = faker.lorem.sentences();
-  markdown += "## " + faker.lorem.sentence() + "\n";
-  markdown += "[" + faker.lorem.words() + "](" +  faker.internet.url() + ")\n";
+  markdown += '## ' + faker.lorem.sentence() + '\n';
+  markdown += '[' + faker.lorem.words() + '](' +  faker.internet.url() + ')\n';
 
   return new Post({
     title: faker.lorem.words(),
@@ -58,7 +60,7 @@ module.exports = {
     });
 
     return admin.save().then(function(user) {
-      console.log("created new admin: " + user.email);
+      console.log('created new admin: ' + user.email);
     }).catch(function(error) {
       throw error;
     });

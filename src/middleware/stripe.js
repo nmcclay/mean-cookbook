@@ -1,7 +1,6 @@
 var JSONAPIError = require('jsonapi-serializer').Error;
-const keyPublishable = process.env.stripeAPIPublishableKey;
 const keySecret = process.env.stripeAPISecretKey;
-const stripe = require("stripe")(keySecret);
+const stripe = require('stripe')(keySecret);
 
 var self = module.exports = {
 
@@ -43,8 +42,8 @@ var self = module.exports = {
         var customer = res.stripe.customer;
         stripe.charges.create({
           amount,
-          description: "Donation",
-          currency: "usd",
+          description: 'Donation',
+          currency: 'usd',
           customer: customer.id
         }).then(function (charge) {
           res.stripe.charge = charge;
@@ -53,7 +52,7 @@ var self = module.exports = {
           return self.errorHandler(error)(req, res);
         });
       } else {
-        var error = new Error("Must provide customer for purchase transaction");
+        var error = new Error('Must provide customer for purchase transaction');
         return self.errorHandler(error)(req, res);
       }
     };

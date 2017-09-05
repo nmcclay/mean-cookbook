@@ -27,7 +27,6 @@ router.get('/', function (req, res) {
 
 router.use('/login', login);
 router.use('/donate', stripe.createCustomer, stripe.charge(500), function(req, res) {
-  console.log(res.stripe);
   res.send('thank you');
 });
 router.use('/customers', jwt.active(), stripe.getCustomers);

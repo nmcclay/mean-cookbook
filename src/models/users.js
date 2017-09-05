@@ -16,10 +16,10 @@ userSchema.pre('save', function(next) {
   if (!user.isModified('password')) return next();
 
   bcrypt.genSalt(function(error, salt) {
-    if (error) return next(err);
+    if (error) return next(error);
 
     bcrypt.hash(user.password, salt, function(error, hash) {
-      if (error) return next(err);
+      if (error) return next(error);
 
       user.password = hash;
       next();

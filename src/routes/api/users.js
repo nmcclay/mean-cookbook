@@ -1,5 +1,3 @@
-var express = require('express');
-var router = express.Router();
 var restFactory = require('../../middleware/rest');
 var Users = require('../../models/users');
 var JSONAPISerializer = require('jsonapi-serializer').Serializer;

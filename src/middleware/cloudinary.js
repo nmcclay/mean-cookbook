@@ -11,7 +11,7 @@ cloudinary.config({
 var self = module.exports = {
   upload: function(image, options) {
     if (!options) options = {};
-    options.type = "authenticated";
+    options.type = 'authenticated';
     return function(req, res, next) {
       cloudinary.v2.uploader.upload(image, options, function(error, result) {
         if (error) {
@@ -24,7 +24,7 @@ var self = module.exports = {
         req.cloudinary = result;
         next();
       });
-    }
+    };
   },
 
   uploadFromFilePath: function(req, res, next) {
@@ -42,7 +42,7 @@ var self = module.exports = {
 
   uploadBuffer: function(buffer, options) {
     if (!options) options = {};
-    options.type = "authenticated";
+    options.type = 'authenticated';
     options.discard_original_filename = true;
     return function(req, res, next) {
       cloudinary.v2.uploader.upload_stream(options, function(error, result) {
@@ -56,7 +56,7 @@ var self = module.exports = {
         req.cloudinary = result;
         next();
       }).end(buffer);
-    }
+    };
   },
 
   uploadFromFileBuffer: function(req, res, next) {
@@ -85,7 +85,7 @@ var self = module.exports = {
           req.cloudinary = result.resources;
           next();
         }
-      })
+      });
     };
   },
 
@@ -98,12 +98,12 @@ var self = module.exports = {
   getSignedImage: function(name, options) {
     if (!options) options = {};
     options.sign_url = true;
-    options.type = "authenticated";
+    options.type = 'authenticated';
     return function(req, res, next) {
       var image = cloudinary.url(name, options);
       req.cloudinary = image;
       next();
-    }
+    };
   },
 
   getSignedImageById: function(req, res, next) {

@@ -1,6 +1,8 @@
 const nodeExternals = require('webpack-node-externals');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+
 const path = require('path');
 
 module.exports = {
@@ -36,6 +38,11 @@ module.exports = {
       asset: "[path].gz[query]",
       algorithm: "gzip",
       test: /\.(js|css)$/
+    }),
+    new BrowserSyncPlugin({
+      host: 'localhost',
+      port: 3100,
+      proxy: 'http://localhost:3000/'
     })
   ]
 };
